@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CVAS Seminar at Lund University</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #00b3a1;
+            --secondary: #00ff9d;
+            --dark: #00485f;
+            --light: #f5f5f5;
+            --accent: #00ff9d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease;
+        }
+
+        .hero {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(
+                    rgba(0, 0, 0, 0.5),
+                    rgba(0, 0, 0, 0.5)
+                ),
+                url('https://raw.githubusercontent.com/AlexandrosLiaskos/Wallpapers/bdd8933fd9eb3c9d288f28cf28fbeca40f2cecc7/CVA.jpg') center/cover;
+            filter: brightness(0.7) contrast(1.2);
+            animation: zoomIn 20s infinite alternate;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        .glowing-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(0, 179, 161, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 157, 0.2) 0%, transparent 50%);
+            mix-blend-mode: overlay;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleAnimation 1.5s ease-out;
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 2rem);
+            margin: 1rem 0;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-out forwards;
+            animation-delay: 0.5s;
+            font-weight: 600;
+            padding: 0 1rem;
+        }
+
+        @keyframes titleAnimation {
+            0% { transform: translateY(100px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 2rem 0;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .glass-card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .event-details {
+            background: linear-gradient(135deg, #00b3a1, #00ff9d);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-details h2,
+        .event-details p,
+        .event-details h3 {
+            color: black;
+            font-weight: 600;
+        }
+
+        .event-details::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .highlight-item {
+            padding: 1rem;
+            border-left: 3px solid var(--accent);
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .highlight-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--accent);
+            transition: all 0.3s ease;
+            z-index: -1;
+        }
+
+        .button:hover {
+            color: black;
+        }
+
+        .button:hover::before {
+            width: 100%;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #00b3a1, #00ff9d);
+            padding: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer p {
+            color: black;
+            font-weight: 600;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--accent) 50%,
+                transparent 100%);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                margin-bottom: 1rem;
+            }
+
+            .subtitle {
+                margin-bottom: 2rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item {
+                width: calc(100% - 40px);
+                padding: 0 0 2rem 50px;
+                left: 0 !important;
+                text-align: left !important;
+            }
+
+            .timeline-content {
+                margin-right: 0;
+                margin-left: 0;
+            }
+
+            .timeline-content::before {
+                left: -35px !important;
+                right: auto !important;
+                top: 20px;
+                transform: none;
+            }
+
+            .timeline-content {
+                padding: 1.5rem;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+                position: relative;
+                margin-bottom: 1rem;
+                max-width: 300px;
+                margin-left: 0;
+            }
+
+            .timeline-content h3 {
+                margin-top: 0;
+                font-size: 1.2rem;
+            }
+
+            .timeline-content p {
+                margin-bottom: 0;
+                font-size: 1rem;
+            }
+
+            .button {
+                padding: 0.8rem 2rem;
+                font-size: 1rem;
+                margin: 1rem;
+            }
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--accent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            margin: 2rem 0;
+            position: relative;
+            width: 50%;
+            padding: 0 2rem;
+        }
+
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+
+        .timeline-content {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-right: 0;
+            margin-left: auto;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: 0;
+            margin-right: auto;
+        }
+
+        .timeline-content::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::before {
+            right: -42px;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            left: -42px;
+        }
+
+        .speaker-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .speaker-link:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+
+    <div id="top" class="hero">
+        <div class="glowing-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">CVAS</h1>
+            <div class="subtitle">Coastal Vulnerability Assessment Software</div>
+            <p class="subtitle" style="font-size: 1.5rem;">An Open-Source GEE Web-App for the automation of coastal vulnerability assessment</p>
+            <a href="#main" class="button" onclick="smoothScroll(event, '#main')">Explore <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+
+    <main id="main">
+        <div class="container">
+            <div class="event-details glass-card">
+                <h2 class="section-title">Event Details</h2>
+                <div class="grid">
+                    <div class="highlight-item">
+                        <i class="fas fa-map-marker-alt" style="color: black;"></i>
+                        <h3>Location</h3>
+                        <p>Lund University, Sweden</p>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-clock" style="color: black;"></i>
+                        <h3>Duration</h3>
+                        <p>30 min presentation + Q&A</p>
+                    </div>
+                    <div class="highlight-item">
+                        <i class="fas fa-users" style="color: black;"></i>
+                        <h3>Audience</h3>
+                        <p>Academic, Research, and Software Developement Community</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2 class="section-title">Presentation Journey</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Project Context</h3>
+                            <p>EO-PERSIST overview and coastal monitoring and analysis challenges</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Technical Innovation</h3>
+                            <p>User-friendly, cloud-based, automated, and FOSS solution</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Live Demo</h3>
+                            <p>Interactive demonstration of CVAS capabilities</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <h3>Future Impact</h3>
+                            <p>Scientific implications and development roadmap</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <h2 class="section-title">Speaker</h2>
+                <a href="https://alexandrosliaskos.github.io/Certificates/" class="speaker-link" target="_blank">
+                    <div class="highlight-item" style="text-align: center;">
+                        <i class="fas fa-user-circle" style="font-size: 3rem; color: var(--accent);"></i>
+                        <h3 style="margin-top: 1rem;">Alexandros P. Liaskos</h3>
+                        <p>Geospatial Analyst - Software Developer</p>
+                        <p>Harokopio University of Athens</p>
+                        <p>National and Kapodistrian University of Athens</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Developed by: Alexandros P. Liaskos</p>
+        <p style="margin-top: 1rem;">2025 EO-PERSIST (Horizon Europe)</p>
+    </footer>
+
+    <script>
+        // Custom cursor
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.querySelector('.cursor');
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.glass-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Smooth scroll function
+        function smoothScroll(e, target) {
+            e.preventDefault();
+            document.querySelector(target).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Handle page load
+        window.onload = function() {
+            window.scrollTo(0, 0);
+        }
+
+        // Prevent browser from restoring scroll position
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+    </script>
+</body>
+</html>
